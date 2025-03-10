@@ -1,0 +1,7 @@
+flask
+transformers
+torch
+spotipy
+nltk
+pandas
+numpy
