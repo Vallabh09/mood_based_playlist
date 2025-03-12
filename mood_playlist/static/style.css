@@ -1,0 +1,125 @@
+/* General Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa;
+    color: #343a40;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.container {
+    max-width: 600px;
+    width: 90%;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    padding: 20px;
+    margin: 20px auto;
+}
+
+/* Header */
+h1 {
+    text-align: center;
+    font-size: 2em;
+    color: #007bff;
+    margin-bottom: 20px;
+}
+
+/* Form */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+textarea {
+    width: 100%;
+    height: 100px;
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    font-size: 1em;
+    resize: none;
+    box-sizing: border-box;
+}
+
+textarea:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+button {
+    background-color: #007bff;
+    color: #ffffff;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Error Message */
+.error {
+    color: #dc3545;
+    font-size: 0.9em;
+    margin-top: -10px;
+}
+
+/* Playlist */
+.playlist {
+    margin-top: 20px;
+}
+
+.playlist h2 {
+    font-size: 1.5em;
+    color: #343a40;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.track {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    background-color: #f8f9fa;
+    transition: transform 0.2s, background-color 0.3s;
+}
+
+.track:hover {
+    transform: scale(1.02);
+    background-color: #e9ecef;
+}
+
+.track .name {
+    font-weight: bold;
+}
+
+.track .artist {
+    font-size: 0.9em;
+    color: #6c757d;
+}
+
+.track a {
+    color: #007bff;
+    text-decoration: none;
+    font-size: 0.9em;
+}
+
+.track a:hover {
+    text-decoration: underline;
+}

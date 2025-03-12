@@ -1,38 +1,26 @@
-# Mood-Based Playlist Generator: Full Project Code
-
-### **1. Initial Setup**
-# Install Required Libraries
-# pip install flask transformers torch spotipy nltk sklearn pandas
-
-### **2. Project Structure**
-# - app.py (Main Backend Logic)
-# - models/ (Holds Emotion Detection Models)
-# - static/ (Frontend Static Files: JS, CSS)
-# - templates/ (HTML Files for Frontend)
-# - config.py (Spotify API Keys)
-
-# Step 1: Import Libraries
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, render_template
 from transformers import pipeline
 from spotipy import Spotify
 from spotipy.oauth2 import SpotifyClientCredentials
 import nltk
-from nltk.tokenize import word_tokenize
-import pandas as pd
+from config import SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET
 
+# Download NLTK resources
 nltk.download('punkt')
 
-# Step 2: Flask App Setup
+# Flask app setup
 app = Flask(__name__)
 
-# Step 3: Load Emotion Detection Model
-emotion_classifier = pipeline("text-classification", model="bhadresh-savani/distilbert-base-uncased-emotion", top_k=1)
+# Load the Emotion Detection Model
+emotion_classifier = pipeline("text-classification", model="j-hartmann/emotion-english-distilroberta-base", return_all_scores=False)
 
-# Step 4: Spotify API Configuration
-from config import SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET
-spotify = Spotify(auth_manager=SpotifyClientCredentials(client_id=SPOTIFY_CLIENT_ID, client_secret=SPOTIFY_CLIENT_SECRET))
+# Spotify API Configuration
+spotify = Spotify(auth_manager=SpotifyClientCredentials(
+    client_id=SPOTIFY_CLIENT_ID, 
+    client_secret=SPOTIFY_CLIENT_SECRET
+))
 
-# Step 5: Mood-to-Music Mapping
+# Mood-to-Genre Mapping
 def mood_to_genre(emotion):
     mood_map = {
         "joy": ["pop", "dance"],
@@ -40,34 +28,49 @@ def mood_to_genre(emotion):
         "anger": ["rock", "rap"],
         "fear": ["chill", "ambient"],
         "love": ["romantic", "ballad"],
+        "neutral": ["pop"]
     }
-    return mood_map.get(emotion.lower(), ["pop"])
+    return mood_map.get(emotion.lower(), ["pop"])  # Default to "pop" if emotion is not mapped
 
-# Step 6: Music Recommendation Engine
+# Fetch Songs from Spotify
 def fetch_songs(genres):
     tracks = []
     for genre in genres:
-        results = spotify.search(q=f"genre:{genre}", type="track", limit=5)
-        for track in results["tracks"]["items"]:
-            tracks.append({
-                "name": track["name"],
-                "artist": track["artists"][0]["name"],
-                "url": track["external_urls"]["spotify"]
-            })
+        try:
+            results = spotify.search(q=f"genre:{genre}", type="track", limit=5)
+            print(f"Spotify API results for genre '{genre}': {results}")  # Debug print
+            if "tracks" in results and "items" in results["tracks"]:
+                for track in results["tracks"]["items"]:
+                    tracks.append({
+                        "name": track.get("name", "Unknown"),
+                        "artist": track["artists"][0].get("name", "Unknown") if track.get("artists") else "Unknown",
+                        "url": track["external_urls"].get("spotify", "#") if track.get("external_urls") else "#"
+                    })
+        except Exception as e:
+            print(f"Error fetching songs for genre {genre}: {e}")
     return tracks
 
-# Step 7: Main Backend Logic
+# Main Route
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
-        journal_entry = request.form['entry']
-        emotion = emotion_classifier(journal_entry)[0]['label']
-        genres = mood_to_genre(emotion)
-        playlist = fetch_songs(genres)
+        journal_entry = request.form.get('entry', '').strip()
+        if not journal_entry:
+            return render_template('index.html', error="Please enter a valid journal entry.")
 
-        return render_template('index.html', emotion=emotion, playlist=playlist)
+        try:
+            # Detect emotion from journal entry
+            emotion_result = emotion_classifier(journal_entry)[0]['label']
+            print(f"Emotion detected: {emotion_result}")  # Debug print
+            genres = mood_to_genre(emotion_result)
+            playlist = fetch_songs(genres)
+
+            return render_template('index.html', emotion=emotion_result, playlist=playlist)
+        except Exception as e:
+            return render_template('index.html', error=f"An error occurred: {e}")
+
     return render_template('index.html')
 
-# Step 8: Run the App
+# Run the App
 if __name__ == '__main__':
     app.run(debug=True)

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Playlist</title>
+</head>
+<body>
+    <h1>Your Mood-Based Playlist</h1>
+    <ul>
+        {% for track in playlist %}
+        <li>{{ track['name'] }} by {{ track['artist'] }}</li>
+        {% endfor %}
+    </ul>
+    <a href="/">Back to Home</a>
+</body>
+</html>

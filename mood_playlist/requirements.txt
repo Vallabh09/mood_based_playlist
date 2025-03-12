@@ -5,3 +5,6 @@ spotipy
 nltk
 pandas
 numpy
+tiktoken 
+protobuf
+blobfile

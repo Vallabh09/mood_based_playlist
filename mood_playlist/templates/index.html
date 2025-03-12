@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mood-Based Playlist</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Mood-Based Playlist</h1>
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+        <form method="post">
+            <textarea name="entry" placeholder="Describe your mood or write a journal entry..."></textarea>
+            <button type="submit">Generate Playlist</button>
+        </form>
+
+        {% if emotion %}
+            <div class="playlist">
+                <h2>Emotion: {{ emotion }}</h2>
+                {% for track in playlist %}
+                    <div class="track">
+                        <div>
+                            <span class="name">{{ track.name }}</span><br>
+                            <span class="artist">{{ track.artist }}</span>
+                        </div>
+                        <a href="{{ track.url }}" target="_blank">Listen</a>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
